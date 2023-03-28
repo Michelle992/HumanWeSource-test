@@ -5,7 +5,7 @@ using TodoList.Api.ViewModel;
 
 namespace TodoList.Api.Repository
 {
-    public interface ITodoItem
+    public interface ITodoItemRepo
     {
         List<TodoItem> GetTodoItems();
         TodoItem GetTodoItem(Guid id);

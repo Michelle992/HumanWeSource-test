@@ -16,11 +16,11 @@ namespace TodoList.Api.UnitTests
     public class TotoItemControllerTest
     {
      
-        private readonly Mock<ITodoItem> _mockRepo;
+        private readonly Mock<ITodoItemRepo> _mockRepo;
         private readonly TodoItemsController _controller;
 
         public TotoItemControllerTest() {
-            _mockRepo = new Mock<ITodoItem>();
+            _mockRepo = new Mock<ITodoItemRepo>();
            var  logger = Mock.Of<ILogger<TodoItemsController>>();
             _controller = new TodoItemsController(logger, _mockRepo.Object);
         }

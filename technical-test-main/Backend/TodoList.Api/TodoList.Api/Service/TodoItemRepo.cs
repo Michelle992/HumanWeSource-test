@@ -8,7 +8,7 @@ using TodoList.Api.ViewModel;
 
 namespace TodoList.Api.Service
 {
-    public class TodoItemRepo : ITodoItem
+    public class TodoItemRepo : ITodoItemRepo
     {
         private TodoContext _context;
         private MapTodoItem _mapper;
@@ -32,18 +32,18 @@ namespace TodoList.Api.Service
 
         public void Save()
         {
-           _context.SaveChanges();
+           _context.SaveChangesAsync();
         }
 
         public void SaveTodoItem(TodoItemViewModel todoItem)
         {
-            var mapped = _mapper.mapTodoItem(todoItem);
-            _context.TodoItems.Add(mapped);
+            var mapped = _mapper.MapTodoItemToEntity(todoItem);
+            _context.TodoItems.AddAsync(mapped);
         }
 
         public void UpdateTodoItem(TodoItemViewModel todoItem)
         {
-            var mapped = _mapper.mapTodoItem(todoItem);
+            var mapped = _mapper.MapTodoItemToEntity(todoItem);
             _context.Entry(mapped).State = EntityState.Modified;
            // _context.SaveChangesAsync();
         }

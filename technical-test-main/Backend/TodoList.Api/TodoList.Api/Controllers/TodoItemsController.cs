@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using TodoList.Api.Mapper;
 using TodoList.Api.Repository;
 using TodoList.Api.ViewModel;
 
@@ -14,14 +13,10 @@ namespace TodoList.Api.Controllers
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
-        private readonly ITodoItem _todoItem;
+        private readonly ITodoItemRepo _todoItem;
         private readonly ILogger<TodoItemsController> _logger;
 
-        
-
-   
-
-        public TodoItemsController( ILogger<TodoItemsController> logger, ITodoItem todoItem)
+        public TodoItemsController( ILogger<TodoItemsController> logger, ITodoItemRepo todoItem)
         {
             _logger = logger;
             _todoItem = todoItem;
@@ -34,17 +29,17 @@ namespace TodoList.Api.Controllers
         public async Task<IActionResult> GetTodoItems()
         {
 
-            var results = _todoItem.GetTodoItems();
+            var results =  _todoItem.GetTodoItems();
             _logger.Log(LogLevel.Information, "succssfully retrieved todolist items");
             return Ok(results);
         }
       
         // GET: api/TodoItems/...
         [HttpGet("{id}")]
-        public Task<IActionResult> GetTodoItem(Guid id)
+        public  Task<IActionResult> GetTodoItem(Guid id)
         {
 
-            var result = _todoItem.GetTodoItem(id);
+            var result =  _todoItem.GetTodoItem(id);
 
             if (result == null)
             {
@@ -58,18 +53,21 @@ namespace TodoList.Api.Controllers
         // PUT: api/TodoItems/... 
         [HttpPut()]
         [Route("PutTodoItem")]
-        public Task<ActionResult<TodoItem>> PutTodoItem(TodoItemViewModel todoItem)
+        public async Task<ActionResult<TodoItem>> PutTodoItem(TodoItemViewModel todoItem)
         {
             var result = _todoItem.GetTodoItem(todoItem.Id);
 
             if (result ==null)
             {
-                return Task.FromResult<ActionResult<TodoItem>>(BadRequest());
+                return (BadRequest("Todo list Item does not exist"));
             }
 
             try
             {
-                
+                if (TodoItemDescriptionExists(todoItem.Description))
+                {
+                    return BadRequest("Description already exists");
+                }
                 _todoItem.UpdateTodoItem(todoItem);
                 _todoItem.Save();
                 _logger.Log(LogLevel.Error, "succssfully updated todolist items");
@@ -79,7 +77,7 @@ namespace TodoList.Api.Controllers
                 if (!TodoItemIdExists(result.Id))
                 {
                     _logger.Log(LogLevel.Error, "Todo item does not exist");
-                    return Task.FromResult<ActionResult<TodoItem>>(NotFound());
+                    return NotFound();
 
                 }
                 else
@@ -88,29 +86,28 @@ namespace TodoList.Api.Controllers
                 }
             }
 
-            return Task.FromResult<ActionResult<TodoItem>>(NoContent());
+            return NoContent();
         }
 
         // POST: api/TodoItems 
         [HttpPost]
         [Route("PostTodoItem")]
-        public Task<IActionResult> PostTodoItem(TodoItemViewModel todoItem)
+        public async Task<IActionResult> PostTodoItem(TodoItemViewModel todoItem)
         {
-            if (string.IsNullOrEmpty(todoItem?.Description))
-            {
-                return Task.FromResult<IActionResult>(BadRequest("Description is required"));
+        
+            if (ModelState.IsValid) {
+                if (TodoItemDescriptionExists(todoItem.Description))
+                {
+                    return BadRequest("Description already exists");
+                }
+                    _todoItem.SaveTodoItem(todoItem);
+                    _todoItem.Save();
+                    _logger.Log(LogLevel.Information, "succssfully Saved todolist items");
             }
-            else if (TodoItemDescriptionExists(todoItem.Description))
-            {
-                return Task.FromResult<IActionResult>(BadRequest("Description already exists"));
-            }
-
-            _todoItem.SaveTodoItem(todoItem);
-            _todoItem.Save();
-            _logger.Log(LogLevel.Information, "succssfully Saved tofolist items");
-            return Task.FromResult<IActionResult>(CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem));
+            
+            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);
         }
-
+ 
         private bool TodoItemIdExists(Guid id)
         {
             return _todoItem.GetTodoItems().Any(x => x.Id == id);

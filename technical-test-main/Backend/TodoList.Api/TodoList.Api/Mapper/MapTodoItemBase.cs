@@ -1,16 +1,11 @@
-﻿using System;
-using TodoList.Api.ViewModel;
+﻿using TodoList.Api.ViewModel;
 
 namespace TodoList.Api.Mapper
 {
     public class MapTodoItem
     {
 
-        public MapTodoItem() { 
-        
-        }
-
-        public TodoItem mapTodoItem(TodoItemViewModel model)
+        public TodoItem MapTodoItemToEntity(TodoItemViewModel model)
         {
             TodoItem item = new TodoItem();
             if (model != null)
@@ -23,6 +18,5 @@ namespace TodoList.Api.Mapper
             return item;
 
         }
-
     }
 }
