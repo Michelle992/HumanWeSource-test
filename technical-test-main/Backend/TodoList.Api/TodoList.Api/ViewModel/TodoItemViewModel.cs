@@ -23,8 +23,5 @@ namespace TodoList.Api.ViewModel
             this.Id = Id;
         }
 
-        public TodoItemViewModel()
-        {
-        }
     }
 }

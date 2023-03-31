@@ -68,9 +68,9 @@ namespace TodoList.Api.Controllers
                 {
                     return BadRequest("Description already exists");
                 }
-                _todoItem.UpdateTodoItem(todoItem);
-                _todoItem.Save();
-                _logger.Log(LogLevel.Error, "succssfully updated todolist items");
+               await _todoItem.UpdateTodoItem(todoItem);
+                     _todoItem.Save();
+                     _logger.Log(LogLevel.Error, "succssfully updated todolist items");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -100,9 +100,9 @@ namespace TodoList.Api.Controllers
                 {
                     return BadRequest("Description already exists");
                 }
-                    _todoItem.SaveTodoItem(todoItem);
-                    _todoItem.Save();
-                    _logger.Log(LogLevel.Information, "succssfully Saved todolist items");
+                  await  _todoItem.SaveTodoItem(todoItem);
+                         _todoItem.Save();
+                         _logger.Log(LogLevel.Information, "succssfully Saved todolist items");
             }
             
             return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);

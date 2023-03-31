@@ -85,12 +85,8 @@ namespace TodoList.Api.UnitTests
         [Fact]
         public void AddItem()
         {
-            var item = new TodoItemViewModel()
-            {
-                Id = Guid.NewGuid(),
-                Description = "Mpho",
-                IsCompleted = false,
-            };
+            var item = new TodoItemViewModel(Guid.NewGuid(), "Testing add", false);
+        
             _controller.PostTodoItem(item);
 
             var blog = _controller.GetTodoItem(item.Id);

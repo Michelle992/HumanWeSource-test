@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TodoList.Api.Mapper;
 using TodoList.Api.Repository;
 using TodoList.Api.ViewModel;
@@ -16,7 +17,6 @@ namespace TodoList.Api.Service
 
         public TodoItemRepo(TodoContext context) {
             _context = context;
-            //_mapper = mapper;
             _mapper = new MapTodoItem();
         }
         public TodoItem GetTodoItem(Guid id)
@@ -30,22 +30,22 @@ namespace TodoList.Api.Service
             return _context.TodoItems.ToList();
         }
 
-        public void Save()
+        public  async void Save()
         {
-           _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
-        public void SaveTodoItem(TodoItemViewModel todoItem)
+        public async Task SaveTodoItem(TodoItemViewModel todoItem)
         {
             var mapped = _mapper.MapTodoItemToEntity(todoItem);
-            _context.TodoItems.AddAsync(mapped);
+           await _context.TodoItems.AddAsync(mapped);
         }
 
-        public void UpdateTodoItem(TodoItemViewModel todoItem)
+        public async Task UpdateTodoItem(TodoItemViewModel todoItem)
         {
             var mapped = _mapper.MapTodoItemToEntity(todoItem);
             _context.Entry(mapped).State = EntityState.Modified;
-           // _context.SaveChangesAsync();
+
         }
     }
 }
